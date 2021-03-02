@@ -5,12 +5,12 @@ import (
 	"math"
 )
 
-type coordenada struct {
+type Coordenada struct {
 	x, y float64
 }
 
 type circulo struct {
-	puntoCentro coordenada
+	puntoCentro Coordenada
 	radio       float64
 }
 
@@ -45,26 +45,24 @@ func main() {
 	fmt.Println(GetLocation(s))
 }
 
-//
-func GetLocation(distances satellites) coordenada {
-
+func GetLocation(distances satellites) Coordenada {
 	var kenobi circulo
 	var skywalker circulo
 	var sato circulo
 	for _, e := range distances.satellites {
 		if e.name == "kenobi" {
 			kenobi = circulo{
-				puntoCentro: coordenada{x: -500, y: -200},
+				puntoCentro: Coordenada{x: -500, y: -200},
 				radio:       e.distance,
 			}
 		} else if e.name == "skywalker" {
 			skywalker = circulo{
-				puntoCentro: coordenada{x: 100, y: -100},
+				puntoCentro: Coordenada{x: 100, y: -100},
 				radio:       e.distance,
 			}
 		} else if e.name == "sato" {
 			sato = circulo{
-				puntoCentro: coordenada{x: 500, y: 100},
+				puntoCentro: Coordenada{x: 500, y: 100},
 				radio:       e.distance,
 			}
 		}
@@ -73,13 +71,13 @@ func GetLocation(distances satellites) coordenada {
 	punto1, punto2 := distances.intersecion_entre_circunferencias(kenobi, skywalker)
 	punto3, punto4 := distances.intersecion_entre_circunferencias(skywalker, sato)
 	punto5, punto6 := distances.intersecion_entre_circunferencias(kenobi, sato)
-	arrayCoordenadas := []coordenada{punto1, punto2, punto3, punto4, punto5, punto6}
+	arrayCoordenadas := []Coordenada{punto1, punto2, punto3, punto4, punto5, punto6}
 	return filtrarCoordenada(arrayCoordenadas)
 }
 
-func filtrarCoordenada(arr []coordenada) coordenada {
-	dict := make(map[coordenada]int)
-	var coorBuscada coordenada = arr[0]
+func filtrarCoordenada(arr []Coordenada) Coordenada {
+	dict := make(map[Coordenada]int)
+	var coorBuscada Coordenada = arr[0]
 	for _, punto := range arr {
 		dict[punto] = dict[punto] + 1
 	}
@@ -97,22 +95,20 @@ func getDistanciaEntreCirculos(c1 circulo, c2 circulo) float64 {
 	return dAB
 }
 
-func (c *satellites) intersecion_entre_circunferencias(cA circulo, cB circulo) (coordenada, coordenada) {
-
+func (c *satellites) intersecion_entre_circunferencias(cA circulo, cB circulo) (Coordenada, Coordenada) {
 	dxAB, dyAB := cB.puntoCentro.x-cA.puntoCentro.x, cB.puntoCentro.y-cA.puntoCentro.y
-
 	distanciaAB := getDistanciaEntreCirculos(cA, cB)
-
 	if distanciaAB > cA.radio+cB.radio {
 		// circulos separados, no se puede determinar
+		return Coordenada{x: math.NaN(), y: math.NaN()}, Coordenada{x: math.NaN(), y: math.NaN()}
 	}
 
 	if distanciaAB < math.Abs(cA.radio-cB.radio) {
-
+		return Coordenada{x: math.NaN(), y: math.NaN()}, Coordenada{x: math.NaN(), y: math.NaN()}
 	}
 
 	if distanciaAB == 0 && cA.radio == cB.radio {
-
+		return Coordenada{x: math.NaN(), y: math.NaN()}, Coordenada{x: math.NaN(), y: math.NaN()}
 	}
 
 	a := (cA.radio*cA.radio - cB.radio*cB.radio + distanciaAB*distanciaAB) / (2 * distanciaAB)
@@ -123,5 +119,5 @@ func (c *satellites) intersecion_entre_circunferencias(cA circulo, cB circulo) (
 	xs2 := xm - h*dyAB/distanciaAB
 	ys1 := ym - h*dxAB/distanciaAB
 	ys2 := ym + h*dxAB/distanciaAB
-	return coordenada{x: math.Round(xs1*10) / 10, y: math.Round(ys1*10) / 10}, coordenada{x: math.Round(xs2*10) / 10, y: math.Round(ys2*10) / 10}
+	return Coordenada{x: math.Round(xs1*10) / 10, y: math.Round(ys1*10) / 10}, Coordenada{x: math.Round(xs2*10) / 10, y: math.Round(ys2*10) / 10}
 }
